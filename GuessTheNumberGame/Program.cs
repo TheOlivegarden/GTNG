@@ -4,13 +4,13 @@
     {
         static void Main(string[] args)
         {
-            int difficultyLevel = 2;
+            DifficultyLevel difficulty = DifficultyLevel.Medium;
             bool playAgain = true;
 
             while (playAgain)
-            {   
+            {
                 Console.WriteLine("Welcome to Guess the Number!");
-                Console.WriteLine($"Difficulty: {GetDifficultyName(difficultyLevel)}");
+                Console.WriteLine($"Difficulty: {GetDifficultyName(difficulty)}");
                 Console.WriteLine("1. Play");
                 Console.WriteLine("2. Change difficulty");
                 Console.WriteLine("0. Exit");
@@ -31,10 +31,10 @@
                         playAgain = false;
                         break;
                     case 1:
-                        PlayGame(difficultyLevel);
+                        PlayGame(difficulty);
                         break;
                     case 2:
-                        difficultyLevel = SelectDifficulty();
+                        difficulty = SelectDifficulty();
                         break;
                 }
             }
@@ -42,33 +42,12 @@
             Console.WriteLine("Thanks for playing!");
         }
 
-        static void PlayGame(int difficulty)
+        static void PlayGame(DifficultyLevel difficulty)
         {
             Console.Clear();
 
-            int maxRange;
-            int maxAttempts;
-
-            switch (difficulty)
-            {
-                case 1:
-                    maxRange = 100;
-                    maxAttempts = 15;
-                    break;
-                case 2:
-                    maxRange = 200;
-                    maxAttempts = 10;
-                    break;
-                case 3:
-                    maxRange = 500;
-                    maxAttempts = 7;
-                    break;
-                default:
-                    Console.WriteLine("Invalid difficulty level. Defaulting to Medium.");
-                    maxRange = 200;
-                    maxAttempts = 10;
-                    break;
-            }
+            int maxRange = difficulty.MaxRange;
+            int maxAttempts = difficulty.MaxAttempts;
 
             Random random = new();
             int SNum = random.Next(1, maxRange + 1);
@@ -116,12 +95,12 @@
             Console.Clear();
         }
 
-        static int SelectDifficulty()
+        static DifficultyLevel SelectDifficulty()
         {
             Console.WriteLine("Select a difficulty level:");
-            Console.WriteLine("1. Easy (1-100)");
-            Console.WriteLine("2. Medium (1-200)");
-            Console.WriteLine("3. Hard (1-500)");
+            Console.WriteLine("1. Easy");
+            Console.WriteLine("2. Medium");
+            Console.WriteLine("3. Hard");
             Console.Write("Enter the level number (1/2/3): ");
 
             bool validInput = int.TryParse(Console.ReadLine(), out int choice);
@@ -133,18 +112,25 @@
                 validInput = int.TryParse(Console.ReadLine(), out choice);
             }
 
-            return choice;
+            return choice switch
+            {
+                1 => DifficultyLevel.Easy,
+                2 => DifficultyLevel.Medium,
+                3 => DifficultyLevel.Hard,
+                _ => DifficultyLevel.Medium,
+            };
         }
 
-        static string GetDifficultyName(int difficulty)
+        static string GetDifficultyName(DifficultyLevel difficulty)
         {
-            return difficulty switch
-            {
-                1 => "Easy",
-                2 => "Medium",
-                3 => "Hard",
-                _ => "Unknown",
-            };
+            if (difficulty.MaxRange == 100 && difficulty.MaxAttempts == 15)
+                return "Easy";
+            else if (difficulty.MaxRange == 200 && difficulty.MaxAttempts == 10)
+                return "Medium";
+            else if (difficulty.MaxRange == 500 && difficulty.MaxAttempts == 7)
+                return "Hard";
+            else
+                return "Unknown";
         }
     }
 }
